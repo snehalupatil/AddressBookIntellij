@@ -1,5 +1,4 @@
 import java.util.*;
-import java.lang.*;
 
 
 class Contact{
@@ -21,7 +20,9 @@ class Contact{
 
 public class AddressBook extends Contact{
 
-    // Add Multiple Address Books
+    /**
+     *  Add Multiple Address Books
+     */
 
     public static void setMultipleBook(){
         Scanner user = new Scanner(System.in);
@@ -42,7 +43,10 @@ public class AddressBook extends Contact{
     }
 
 
-    //Choose Differnt option for fill Details 
+    /**
+     * //Choose Differnt option for fill Details
+      * @param book
+     */
     public static void chooseOption(AddressBook book)
     {
         Scanner user = new Scanner(System.in);
@@ -82,7 +86,7 @@ public class AddressBook extends Contact{
                     break;
 
                 case 7:
-                    searchPersonInstate();
+                    searchPersonInState();
                     break;
 
                 case 8:
@@ -99,10 +103,9 @@ public class AddressBook extends Contact{
     }
 
 
-
-
-
-    //Set detalis for new person
+    /**
+     * //Set detalis for new person
+     */
     public void setDetails()
     {
         Scanner sc = new Scanner(System.in);
@@ -151,12 +154,14 @@ public class AddressBook extends Contact{
                 break;
             }
             else
-                System.out.println("Invalid input");
+                System.out.println("Invalide input");
         }
 
     }
 
-    //Shows details of person who present in book
+    /**
+     * Shows details of person who present in book
+     */
     public void showDetails()
     {
         Scanner shows = new Scanner(System.in);
@@ -184,7 +189,9 @@ public class AddressBook extends Contact{
 
     }
 
-    //Edit the details of persons using name of person
+    /**
+     * Edit the details of persons using name of person
+     */
     public void editDetails()
     {
         Scanner sc = new Scanner(System.in);
@@ -241,7 +248,9 @@ public class AddressBook extends Contact{
 
     }
 
-    //delete the details of persons from address book
+    /**
+     * delete the details of persons from address book
+     */
     public void deleteDetails()
     {
         Scanner delete = new Scanner(System.in);
@@ -293,7 +302,7 @@ public class AddressBook extends Contact{
             for(String city : addressbook.city) {
                 if(city.equalsIgnoreCase(cityName)) {
                     flag=1;
-                    System.out.println(first_name.get(flag)+" "+last_Name.get(flag));
+                    System.out.println(first_name);
                 }
             }
         }
@@ -301,7 +310,7 @@ public class AddressBook extends Contact{
             System.out.println("This City does not exists!");
     }
 
-    private static void searchPersonInstate() {
+    public static void searchPersonInState(){
         Scanner user = new Scanner(System.in);
         System.out.print("Enter State name :");
         int flag=0;
@@ -311,16 +320,13 @@ public class AddressBook extends Contact{
             for(String state : addressbook.state) {
                 if(state.equalsIgnoreCase(stateName)) {
                     flag=1;
-                    System.out.println(first_name.get(flag)+" "+last_Name.get(flag));
+                    System.out.println(first_name);
                 }
             }
         }
         if(flag==0)
             System.out.println("This state does not exists!");
     }
-
-
-
 
 
 
@@ -339,3 +345,4 @@ public class AddressBook extends Contact{
 
 
 }
+
