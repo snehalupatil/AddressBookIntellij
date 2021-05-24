@@ -29,7 +29,9 @@ public class AddressBook extends Contact{
 
     static HashMap<Contact,String> personsInCity = new HashMap<Contact,String>();
 
-    // Add Multiple Address Books
+    /**
+     * Add Multiple Address Books
+     */
 
     public static void setMultipleBook(){
         Scanner user = new Scanner(System.in);
@@ -50,7 +52,10 @@ public class AddressBook extends Contact{
     }
 
 
-    //Choose Differnt option for fill Details
+    /**
+     * Choose Different options for fill Details
+     * @param book
+     */
     public static void chooseOption(AddressBook book)
     {
         Scanner user = new Scanner(System.in);
@@ -60,7 +65,9 @@ public class AddressBook extends Contact{
         while(true)
         {
             System.out.println();
-            System.out.println("1)Set details of new person\n2)Show details of person\n3)Delete details of person\n4)edit the details of person\n5)Goto other AddressBook\n6)Search person in city\n7)Search person in state\n8)Count the person by city\n9)Sort By Name\n10)Exit");
+            System.out.println("1)Set details of new person\n2)Show details of person\n3)Delete details of person\n4)edit the details of person\n" +
+                    "5)Goto other AddressBook\n6)Search person in city\n7)Search person in state\n8)Count the person by city\n" +
+                    "9)Sort By Name\n10)Sort Persons By City\n11)Sort Persons By State\n12)Sort Persons By ZipCode\n13)Exit");
             int select = user.nextInt();
 
             switch(select)
@@ -102,6 +109,18 @@ public class AddressBook extends Contact{
                     break;
 
                 case 10:
+                    sortPersonsByCity();
+                    break;
+
+                case 11:
+                    sortPersonsByState();
+                    break;
+
+                case 12:
+                    sortPersonsByZipCode();
+                    break;
+
+                case 13:
                     System.exit(0);
                     break;
 
@@ -115,8 +134,9 @@ public class AddressBook extends Contact{
     }
 
 
-
-    //Set detalis for new person
+    /**
+     * Set details for new person
+     */
     public void setDetails()
     {
         Scanner sc = new Scanner(System.in);
@@ -170,7 +190,9 @@ public class AddressBook extends Contact{
 
     }
 
-    //Shows details of person who present in book
+    /**
+     * Shows details of person who present in book
+     */
     public void showDetails()
     {
         Scanner shows = new Scanner(System.in);
@@ -198,7 +220,9 @@ public class AddressBook extends Contact{
 
     }
 
-    //Edit the details of persons using name of person
+    /**
+     * Edit the details of persons using name of person
+     */
     public void editDetails()
     {
         Scanner sc = new Scanner(System.in);
@@ -255,7 +279,9 @@ public class AddressBook extends Contact{
 
     }
 
-    //delete the details of persons from address book
+    /**
+     * delete the details of persons from address book
+     */
     public void deleteDetails()
     {
         Scanner delete = new Scanner(System.in);
@@ -287,7 +313,6 @@ public class AddressBook extends Contact{
             System.out.println("you Selected 'NO' ");
         else
             System.out.println("inavalid option");
-
     }
 
     public static boolean checkIsDuplicate(String personName){
@@ -295,8 +320,11 @@ public class AddressBook extends Contact{
             return true;
         else
             return false;
-
     }
+
+    /**
+     * Search person in city
+     */
     public static void searchPersonIncity(){
         Scanner userInput=new Scanner(System.in);
         System.out.print("Enter city name :");
@@ -315,6 +343,9 @@ public class AddressBook extends Contact{
             System.out.println("This City does not exists!");
     }
 
+    /**
+     * search person in state
+     */
     public static void searchPersonInState(){
         Scanner user = new Scanner(System.in);
         System.out.print("Enter State name :");
@@ -334,6 +365,9 @@ public class AddressBook extends Contact{
     }
 
 
+    /**
+     * count the persons in the city
+     */
     public static void countPersonsByCity(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the City name:");
@@ -345,6 +379,11 @@ public class AddressBook extends Contact{
             System.out.println("Total No. Of Persons Found In "+cityName.toUpperCase()+" Are :"+personsInCity.stream().count());
     }
 
+    /**
+     * get person's details by city
+     * @param cityName
+     * @return
+     */
     public static List<Contact> getPersonsByCity(String cityName) {
         List<Contact> list = personsInCity.entrySet()
                 .stream()
@@ -354,15 +393,50 @@ public class AddressBook extends Contact{
         return list;
     }
 
+    /**
+     * sort person name alphabetically
+     */
     public static void sortByName(){
         first_name.stream().sorted().forEach(System.out::println);
 
+    }
+
+    /**
+     * sort person details by city
+     */
+    public static void sortPersonsByCity() {
+        List<String> cityName = city.stream().sorted().
+                collect(Collectors.toList());
+        System.out.println("Sorted list by city");
+        cityName.forEach(System.out::println);
+
+    }
+
+
+    /**
+     * sort person details by state
+     */
+    public static void sortPersonsByState() {
+        List<String> stateName = state.stream().sorted().collect(Collectors.toList());
+        System.out.println("Sorted list by state");
+        stateName.forEach(System.out::println);
+
+    }
+
+    /**
+     * sort person details by zipcode
+     */
+    public static void sortPersonsByZipCode() {
+        List<String> zipcode = zip.stream().sorted().collect(Collectors.toList());
+        System.out.println("Sorted list by zipcode");
+        zipcode.forEach(System.out::println);
     }
 
 
 
     public static void main(String[] args){
 
+        System.out.println("**** Welcome to Address Book ****");
         AddressBook AddressBook1 = new AddressBook();
         AddressBook AddressBook2 = new AddressBook();
 
