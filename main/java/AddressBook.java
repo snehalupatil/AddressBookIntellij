@@ -60,7 +60,7 @@ public class AddressBook extends Contact{
         while(true)
         {
             System.out.println();
-            System.out.println("1)Set details of new person\n2)Show details of person\n3)Delete details of person\n4)edit the details of person\n5)Goto other AddressBook\n6)Search person in city\n7)Search person in state\n8)Count the person by city\n9)Exit");
+            System.out.println("1)Set details of new person\n2)Show details of person\n3)Delete details of person\n4)edit the details of person\n5)Goto other AddressBook\n6)Search person in city\n7)Search person in state\n8)Count the person by city\n9)Sort By Name\n10)Exit");
             int select = user.nextInt();
 
             switch(select)
@@ -98,6 +98,10 @@ public class AddressBook extends Contact{
                     break;
 
                 case 9:
+                    sortByName();
+                    break;
+
+                case 10:
                     System.exit(0);
                     break;
 
@@ -242,7 +246,7 @@ public class AddressBook extends Contact{
         }
         else
         {
-            System.out.println("inavalid option choose correct ");
+            System.out.println("invalid option choose correct ");
             editDetails();
         }
         System.out.println("Firs_name: " +first_name+ " \nlast_name: "+last_Name+ "\nAddress: "+address+ " \ncity: "+city+
@@ -348,6 +352,11 @@ public class AddressBook extends Contact{
                 .map(personInCity->personInCity.getKey())
                 .collect(Collectors.toList());
         return list;
+    }
+
+    public static void sortByName(){
+        first_name.stream().sorted().forEach(System.out::println);
+
     }
 
 
