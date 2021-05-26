@@ -67,7 +67,8 @@ public class AddressBook extends Contact{
             System.out.println();
             System.out.println("1)Set details of new person\n2)Show details of person\n3)Delete details of person\n4)edit the details of person\n" +
                     "5)Goto other AddressBook\n6)Search person in city\n7)Search person in state\n8)Count the person by city\n" +
-                    "9)Sort By Name\n10)Sort Persons By City\n11)Sort Persons By State\n12)Sort Persons By ZipCode\n13)Exit");
+                    "9)Sort By Name\n10)Sort Persons By City\n11)Sort Persons By State\n12)Sort Persons By ZipCode\n" +
+                    "13)Write To File\n14)Read From File\n15)Exit");
             int select = user.nextInt();
 
             switch(select)
@@ -121,6 +122,21 @@ public class AddressBook extends Contact{
                     break;
 
                 case 13:
+                    try {
+                        writeToFile();
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                    break;
+                case 14:
+                    try {
+                        readFromFile();
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case 15:
                     System.exit(0);
                     break;
 
@@ -430,6 +446,36 @@ public class AddressBook extends Contact{
         List<String> zipcode = zip.stream().sorted().collect(Collectors.toList());
         System.out.println("Sorted list by zipcode");
         zipcode.forEach(System.out::println);
+    }
+
+    public static void writeToFile() throws IOException {
+        try {
+            FileOutputStream fileData = new FileOutputStream("C:/Users/win-7/Desktop/Java/AddressBook/src/main/resources/Address.txt");
+            ObjectOutputStream writeStream = new ObjectOutputStream(fileData);
+            writeStream.writeObject(first_name);
+            writeStream.writeObject(last_Name);
+            writeStream.flush();
+            writeStream.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void readFromFile()throws IOException {
+        try {
+            FileInputStream file = new FileInputStream("C:/Users/win-7/Desktop/Java/AddressBook/src/main/resources/Address.txt");
+            ObjectInputStream readStream = new ObjectInputStream(file);
+            ArrayList<Contact> co = (ArrayList<Contact>) readStream.readObject();
+            readStream.close();
+            System.out.println(co.toString());
+
+        }catch(FileNotFoundException e) {
+            System.out.println("File Not Found!");
+        }catch(IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 
