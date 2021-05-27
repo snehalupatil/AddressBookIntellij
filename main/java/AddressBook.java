@@ -1,11 +1,20 @@
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.io.*;
 
 class Contact{
@@ -28,12 +37,13 @@ class Contact{
 public class AddressBook extends Contact{
 
     static HashMap<Contact,String> personsInCity = new HashMap<Contact,String>();
+    static  ArrayList<String> list;
 
-    /**
-     * Add Multiple Address Books
-     */
+    public static String CSV_CONTACT_FILE_PATH = "C:/Users/win-7/Desktop/Java/AddressBook/src/main/resources/Contact.csv";
 
-    public static void setMultipleBook(){
+    // Add Multiple Address Books
+
+    public static void setMultipleBook() throws IOException {
         Scanner user = new Scanner(System.in);
         System.out.println("List of Address Books: ");
         for(Map.Entry m :multipleBooks.entrySet()){
@@ -52,12 +62,8 @@ public class AddressBook extends Contact{
     }
 
 
-    /**
-     * Choose Different options for fill Details
-     * @param book
-     */
-    public static void chooseOption(AddressBook book)
-    {
+    //Choose Differnt option for fill Details
+    public static void chooseOption(AddressBook book) throws IOException {
         Scanner user = new Scanner(System.in);
         System.out.println("choose the option from below");
 
@@ -65,10 +71,10 @@ public class AddressBook extends Contact{
         while(true)
         {
             System.out.println();
-            System.out.println("1)Set details of new person\n2)Show details of person\n3)Delete details of person\n4)edit the details of person\n" +
-                    "5)Goto other AddressBook\n6)Search person in city\n7)Search person in state\n8)Count the person by city\n" +
-                    "9)Sort By Name\n10)Sort Persons By City\n11)Sort Persons By State\n12)Sort Persons By ZipCode\n" +
-                    "13)Write To File\n14)Read From File\n15)Exit");
+            System.out.println("1)Set details of new person\n2)Show details of person\n3)Delete details of person\n" +
+                    "4)edit the details of person\n5)Goto other AddressBook\n6)Search person in city\n" +
+                    "7)Search person in state\n8)Count the person by city\n9)Sort person by name\n10)Sort By City\n" +
+                    "11)Sort by state\n12)Sort by zip\n13)WriteToFile\n14)readFromFile\n15)WriteOrReadCsvFile\n16)Exit");
             int select = user.nextInt();
 
             switch(select)
@@ -120,7 +126,6 @@ public class AddressBook extends Contact{
                 case 12:
                     sortPersonsByZipCode();
                     break;
-
                 case 13:
                     try {
                         writeToFile();
@@ -137,6 +142,16 @@ public class AddressBook extends Contact{
                     break;
 
                 case 15:
+                    try {
+                        writeOrReadCSVFile();
+                    } catch (CsvDataTypeMismatchException e) {
+                        e.printStackTrace();
+                    } catch (CsvRequiredFieldEmptyException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case 16:
                     System.exit(0);
                     break;
 
@@ -150,9 +165,8 @@ public class AddressBook extends Contact{
     }
 
 
-    /**
-     * Set details for new person
-     */
+
+    //Set detalis for new person
     public void setDetails()
     {
         Scanner sc = new Scanner(System.in);
@@ -179,7 +193,7 @@ public class AddressBook extends Contact{
             city.add(sc.nextLine());
             System.out.println("Enter the Name of state");
             state.add(sc.nextLine());
-            System.out.println("Enter the Name of zip code ");
+            System.out.println("Enter the Name of zip code: ");
             zip.add(sc.nextLine());
             System.out.println("Enter the Phone Number: ");
             phone.add(sc.nextLine());
@@ -187,7 +201,7 @@ public class AddressBook extends Contact{
             email.add(sc.nextLine());
 
             System.out.println();
-            System.out.println("Do yoy want to set another person details select y/n");
+            System.out.println("Do you want to set another person details select y/n");
 
             String choose = sc.nextLine();
             if(choose.equalsIgnoreCase("y"))
@@ -206,9 +220,7 @@ public class AddressBook extends Contact{
 
     }
 
-    /**
-     * Shows details of person who present in book
-     */
+    //Shows details of person who present in book
     public void showDetails()
     {
         Scanner shows = new Scanner(System.in);
@@ -236,9 +248,7 @@ public class AddressBook extends Contact{
 
     }
 
-    /**
-     * Edit the details of persons using name of person
-     */
+    //Edit the details of persons using name of person
     public void editDetails()
     {
         Scanner sc = new Scanner(System.in);
@@ -286,7 +296,7 @@ public class AddressBook extends Contact{
         }
         else
         {
-            System.out.println("invalid option choose correct ");
+            System.out.println("Invalid option choose correct ");
             editDetails();
         }
         System.out.println("Firs_name: " +first_name+ " \nlast_name: "+last_Name+ "\nAddress: "+address+ " \ncity: "+city+
@@ -295,9 +305,7 @@ public class AddressBook extends Contact{
 
     }
 
-    /**
-     * delete the details of persons from address book
-     */
+    //delete the details of persons from address book
     public void deleteDetails()
     {
         Scanner delete = new Scanner(System.in);
@@ -328,7 +336,8 @@ public class AddressBook extends Contact{
         else if (check.equalsIgnoreCase("n"))
             System.out.println("you Selected 'NO' ");
         else
-            System.out.println("inavalid option");
+            System.out.println("Invalid option");
+
     }
 
     public static boolean checkIsDuplicate(String personName){
@@ -336,14 +345,11 @@ public class AddressBook extends Contact{
             return true;
         else
             return false;
-    }
 
-    /**
-     * Search person in city
-     */
+    }
     public static void searchPersonIncity(){
         Scanner userInput=new Scanner(System.in);
-        System.out.print("Enter city name :");
+        System.out.print("Enter city name:");
         int flag=0;
         String cityName=userInput.nextLine();
         for(Map.Entry m : multipleBooks.entrySet()){
@@ -359,12 +365,9 @@ public class AddressBook extends Contact{
             System.out.println("This City does not exists!");
     }
 
-    /**
-     * search person in state
-     */
     public static void searchPersonInState(){
         Scanner user = new Scanner(System.in);
-        System.out.print("Enter State name :");
+        System.out.print("Enter State Name:");
         int flag=0;
         String stateName=user.nextLine();
         for(Map.Entry m : multipleBooks.entrySet()){
@@ -381,12 +384,9 @@ public class AddressBook extends Contact{
     }
 
 
-    /**
-     * count the persons in the city
-     */
     public static void countPersonsByCity(){
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the City name:");
+        System.out.println("Enter the city name ");
         String cityName= sc.nextLine();
         List<Contact>personsInCity=getPersonsByCity(cityName);
         if(personsInCity.isEmpty())
@@ -395,11 +395,7 @@ public class AddressBook extends Contact{
             System.out.println("Total No. Of Persons Found In "+cityName.toUpperCase()+" Are :"+personsInCity.stream().count());
     }
 
-    /**
-     * get person's details by city
-     * @param cityName
-     * @return
-     */
+
     public static List<Contact> getPersonsByCity(String cityName) {
         List<Contact> list = personsInCity.entrySet()
                 .stream()
@@ -409,17 +405,15 @@ public class AddressBook extends Contact{
         return list;
     }
 
-    /**
-     * sort person name alphabetically
-     */
+
     public static void sortByName(){
-        first_name.stream().sorted().forEach(System.out::println);
+        List<String> name = first_name.stream().sorted().
+                collect(Collectors.toList());
+        System.out.println("Sorted list by name");
+        name.forEach(System.out::println);
 
     }
 
-    /**
-     * sort person details by city
-     */
     public static void sortPersonsByCity() {
         List<String> cityName = city.stream().sorted().
                 collect(Collectors.toList());
@@ -429,21 +423,18 @@ public class AddressBook extends Contact{
     }
 
 
-    /**
-     * sort person details by state
-     */
+
     public static void sortPersonsByState() {
-        List<String> stateName = state.stream().sorted().collect(Collectors.toList());
+        List<String> stateName = state.stream().sorted().
+                collect(Collectors.toList());
         System.out.println("Sorted list by state");
         stateName.forEach(System.out::println);
 
     }
 
-    /**
-     * sort person details by zipcode
-     */
     public static void sortPersonsByZipCode() {
-        List<String> zipcode = zip.stream().sorted().collect(Collectors.toList());
+        List<String> zipcode = zip.stream().sorted().
+                collect(Collectors.toList());
         System.out.println("Sorted list by zipcode");
         zipcode.forEach(System.out::println);
     }
@@ -478,11 +469,46 @@ public class AddressBook extends Contact{
         }
     }
 
+    public static void writeOrReadCSVFile() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+        Scanner select = new Scanner(System.in);
+        System.out.println("Select 'W' to Write in to Csv file and 'R' for Read the file:");
+        while (true) {
+            String check = select.nextLine();
+            if (check.equalsIgnoreCase("w")) {
+                try (CSVWriter write = new CSVWriter(new FileWriter(CSV_CONTACT_FILE_PATH))) {
+                    List<String[]> csvdata = new ArrayList<String[]>();
 
+                    String[] header = "First name,Last Name,Address,City,State,ZipCode,Phone Number,Email".split(",");
+                    String[] profile = "Snehal,Patil,Kavalapur,Sangli,Maharashtra,123,111111,abc@gmail.com".split(",");
 
-    public static void main(String[] args){
+                    csvdata.add(header);
+                    csvdata.add(profile);
+                    write.writeAll(csvdata);
 
-        System.out.println("**** Welcome to Address Book ****");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            } else if (check.equalsIgnoreCase("R")) {
+                try (Reader reader = Files.newBufferedReader(Paths.get(CSV_CONTACT_FILE_PATH));
+                     CSVReader csvreader = new CSVReader(reader);
+                ) {
+                    String[] nextLine;
+                    while((nextLine= csvreader.readNext())!=null){
+                        for (String token : nextLine)
+                            System.out.println(token);
+                        System.out.println("\n");
+                    }
+                }
+                break;
+            }else
+                System.out.println("Select valid option");
+
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+
         AddressBook AddressBook1 = new AddressBook();
         AddressBook AddressBook2 = new AddressBook();
 
