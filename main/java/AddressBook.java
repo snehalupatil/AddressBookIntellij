@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -6,9 +7,11 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.chrono.JapaneseChronology;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,29 +20,13 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.io.*;
 
-class Contact{
-
-    protected static ArrayList<String> first_name = new ArrayList<String>();
-    protected static ArrayList<String> last_Name = new ArrayList<String>();
-    protected static ArrayList<String> address = new ArrayList<String>();
-    protected static ArrayList<String> city = new ArrayList<String>();
-    protected static ArrayList<String> state = new ArrayList<String>();
-    protected static ArrayList<String> zip = new ArrayList<String>();
-    protected static ArrayList<String> phone = new ArrayList<String>();
-    protected static ArrayList<String> email = new ArrayList<String>();
-
-    protected static Map<String,AddressBook> multipleBooks = new HashMap<String,AddressBook>();
-
-}
-
-
-
 public class AddressBook extends Contact{
 
     static HashMap<Contact,String> personsInCity = new HashMap<Contact,String>();
     static  ArrayList<String> list;
 
     public static String CSV_CONTACT_FILE_PATH = "C:/Users/win-7/Desktop/Java/AddressBook/src/main/resources/Contact.csv";
+    public static String JSON_USER_FILE_PATH = "C:/Users/win-7/Desktop/Java/AddressBook/src/main/resources/User.json";
 
     // Add Multiple Address Books
 
@@ -74,7 +61,8 @@ public class AddressBook extends Contact{
             System.out.println("1)Set details of new person\n2)Show details of person\n3)Delete details of person\n" +
                     "4)edit the details of person\n5)Goto other AddressBook\n6)Search person in city\n" +
                     "7)Search person in state\n8)Count the person by city\n9)Sort person by name\n10)Sort By City\n" +
-                    "11)Sort by state\n12)Sort by zip\n13)WriteToFile\n14)readFromFile\n15)WriteOrReadCsvFile\n16)Exit");
+                    "11)Sort by state\n12)Sort by zip\n13)WriteToFile\n14)readFromFile\n15)WriteOrReadCsvFile\n" +
+                    "16)WriteORReadJsonFile\n17)Exit");
             int select = user.nextInt();
 
             switch(select)
@@ -152,6 +140,10 @@ public class AddressBook extends Contact{
                     break;
 
                 case 16:
+                    writeOrReadJsonFile();
+                    break;
+
+                case 17:
                     System.exit(0);
                     break;
 
@@ -193,7 +185,7 @@ public class AddressBook extends Contact{
             city.add(sc.nextLine());
             System.out.println("Enter the Name of state");
             state.add(sc.nextLine());
-            System.out.println("Enter the Name of zip code: ");
+            System.out.println("Enter the Name of zip code ");
             zip.add(sc.nextLine());
             System.out.println("Enter the Phone Number: ");
             phone.add(sc.nextLine());
@@ -201,7 +193,7 @@ public class AddressBook extends Contact{
             email.add(sc.nextLine());
 
             System.out.println();
-            System.out.println("Do you want to set another person details select y/n");
+            System.out.println("Do yoy want to set another person details select y/n");
 
             String choose = sc.nextLine();
             if(choose.equalsIgnoreCase("y"))
@@ -296,7 +288,7 @@ public class AddressBook extends Contact{
         }
         else
         {
-            System.out.println("Invalid option choose correct ");
+            System.out.println("inavalid option choose correct ");
             editDetails();
         }
         System.out.println("Firs_name: " +first_name+ " \nlast_name: "+last_Name+ "\nAddress: "+address+ " \ncity: "+city+
@@ -336,7 +328,7 @@ public class AddressBook extends Contact{
         else if (check.equalsIgnoreCase("n"))
             System.out.println("you Selected 'NO' ");
         else
-            System.out.println("Invalid option");
+            System.out.println("inavalid option");
 
     }
 
@@ -349,7 +341,7 @@ public class AddressBook extends Contact{
     }
     public static void searchPersonIncity(){
         Scanner userInput=new Scanner(System.in);
-        System.out.print("Enter city name:");
+        System.out.print("Enter city name :");
         int flag=0;
         String cityName=userInput.nextLine();
         for(Map.Entry m : multipleBooks.entrySet()){
@@ -367,7 +359,7 @@ public class AddressBook extends Contact{
 
     public static void searchPersonInState(){
         Scanner user = new Scanner(System.in);
-        System.out.print("Enter State Name:");
+        System.out.print("Enter State name :");
         int flag=0;
         String stateName=user.nextLine();
         for(Map.Entry m : multipleBooks.entrySet()){
@@ -445,6 +437,12 @@ public class AddressBook extends Contact{
             ObjectOutputStream writeStream = new ObjectOutputStream(fileData);
             writeStream.writeObject(first_name);
             writeStream.writeObject(last_Name);
+            writeStream.writeObject(address);
+            writeStream.writeObject(city);
+            writeStream.writeObject(state);
+            writeStream.writeObject(zip);
+            writeStream.writeObject(phone);
+            writeStream.writeObject(email);
             writeStream.flush();
             writeStream.close();
         } catch (FileNotFoundException e) {
@@ -471,15 +469,15 @@ public class AddressBook extends Contact{
 
     public static void writeOrReadCSVFile() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
         Scanner select = new Scanner(System.in);
-        System.out.println("Select 'W' to Write in to Csv file and 'R' for Read the file:");
+        System.out.println("Select 'W' to Write in to Csv file and 'R' for Read the file ");
         while (true) {
             String check = select.nextLine();
             if (check.equalsIgnoreCase("w")) {
                 try (CSVWriter write = new CSVWriter(new FileWriter(CSV_CONTACT_FILE_PATH))) {
                     List<String[]> csvdata = new ArrayList<String[]>();
 
-                    String[] header = "First name,Last Name,Address,City,State,ZipCode,Phone Number,Email".split(",");
-                    String[] profile = "Snehal,Patil,Kavalapur,Sangli,Maharashtra,123,111111,abc@gmail.com".split(",");
+                    String[] header = "First Name,Last Name,Address,City,State,ZipCode,Phone Number,Email".split(",");
+                    String[] profile = "Snehal, Patil, Sangli, Sangli, Maharashtra,123456,9876543210,abc@gmail.com".split(",");
 
                     csvdata.add(header);
                     csvdata.add(profile);
@@ -495,8 +493,8 @@ public class AddressBook extends Contact{
                 ) {
                     String[] nextLine;
                     while((nextLine= csvreader.readNext())!=null){
-                        for (String token : nextLine)
-                            System.out.println(token);
+                        for (String tocken : nextLine)
+                            System.out.println(tocken);
                         System.out.println("\n");
                     }
                 }
@@ -507,18 +505,73 @@ public class AddressBook extends Contact{
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void writeOrReadJsonFile() throws IOException {
+        Scanner select = new Scanner(System.in);
+        System.out.println("Select 'W' to Write in to JSON file and 'R' for Read the JSON file ");
+        while (true) {
+            String check = select.nextLine();
+            if (check.equalsIgnoreCase("w")) {
+                try {
+                    Gson gson = new Gson();
+                    FileWriter fileWriter = new FileWriter(JSON_USER_FILE_PATH);
+                    gson.toJson(Contact.first_name, fileWriter);
+                    gson.toJson(Contact.last_Name, fileWriter);
+                    gson.toJson(Contact.address, fileWriter);
+                    gson.toJson(Contact.city, fileWriter);
+                    gson.toJson(Contact.state, fileWriter);
+                    gson.toJson(Contact.zip, fileWriter);
+                    gson.toJson(Contact.phone, fileWriter);
+                    gson.toJson(Contact.email, fileWriter);
+                    fileWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Wrote to JSON File");
+                break;
 
-        AddressBook AddressBook1 = new AddressBook();
-        AddressBook AddressBook2 = new AddressBook();
+            } else if (check.equalsIgnoreCase("R")) {
+                try{
+                    Gson gson = new Gson();
+                    Reader reader = new FileReader(JSON_USER_FILE_PATH);
+                    Contact.first_name = gson.fromJson(reader, (Type) Contact.class);
+                    System.out.println("First Name:"+first_name);
+                    Contact.last_Name = gson.fromJson(reader, (Type) Contact.class);
+                    System.out.println("Last Name:"+last_Name);
+                    Contact.address = gson.fromJson(reader, (Type) Contact.class);
+                    System.out.println("Address:"+address);
+                    Contact.city = gson.fromJson(reader, (Type) Contact.class);
+                    System.out.println("City:"+city);
+                    Contact.state = gson.fromJson(reader, (Type) Contact.class);
+                    System.out.println("State:"+state);
+                    Contact.zip = gson.fromJson(reader, (Type) Contact.class);
+                    System.out.println("ZipCode:"+zip);
+                    Contact.phone = gson.fromJson(reader, (Type) Contact.class);
+                    System.out.println("Phone Number:"+phone);
+                    Contact.email = gson.fromJson(reader, (Type) Contact.class);
+                    System.out.println("Email:"+email);
+                    reader.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+                break;
 
-        multipleBooks.put("AddressBook1",AddressBook1);
-        multipleBooks.put("AddressBook2",AddressBook2);
+            } else
+                System.out.println("Select valid option");
 
-        setMultipleBook();
-
+        }
     }
+            public static void main(String[] args) throws IOException {
+
+                AddressBook AddressBook1 = new AddressBook();
+                AddressBook AddressBook2 = new AddressBook();
+
+                multipleBooks.put("AddressBook1",AddressBook1);
+                multipleBooks.put("AddressBook2",AddressBook2);
+
+                setMultipleBook();
+
+            }
 
 
 
-}
+        }
