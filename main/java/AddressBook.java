@@ -207,7 +207,7 @@ public class AddressBook extends Contact{
                 break;
             }
             else
-                System.out.println("Invalide input");
+                System.out.println("Invalid input");
         }
 
     }
@@ -235,7 +235,7 @@ public class AddressBook extends Contact{
 
         }
         else
-            System.out.println("Thie Person is not available in book ");
+            System.out.println("This Person is not available in book ");
 
 
     }
@@ -288,7 +288,7 @@ public class AddressBook extends Contact{
         }
         else
         {
-            System.out.println("inavalid option choose correct ");
+            System.out.println("invalid option choose correct ");
             editDetails();
         }
         System.out.println("Firs_name: " +first_name+ " \nlast_name: "+last_Name+ "\nAddress: "+address+ " \ncity: "+city+
